@@ -1,0 +1,91 @@
+version: "3"
+services:
+  snapy_suns:
+    container_name: snapy_suns
+    image: ubuntu:latest
+    build: .
+    depends_on:
+      - our_db
+    networks:
+      - our_network
+    restart: always
+    command: tail -F anything
+    volumes:
+      - ubuntu_volumes:/suns
+    ports:
+      - "8080:8081"
+
+    
+    links:
+      - "our_db:our_db"
+
+
+  snapy_moons:
+    container_name: snapy_moons
+    image: ubuntu:latest
+    build: .
+    volumes:
+      - ubuntu_volumes:/moons
+    depends_on:
+      - our_db
+    command: tail -F anything
+    networks:
+      - our_network
+    restart: always
+    ports:
+      - "8082:8083"
+    
+    links:
+      - "our_db:our_db"
+
+  snapy_comets:
+    container_name: snapy_comets
+    image: ubuntu:latest
+    build: .
+    command: tail -F anything
+    volumes:
+      - ubuntu_volumes:/comets
+    depends_on:
+      - our_db
+    networks:
+      - our_network
+    restart: always
+    ports:
+      - "8084:8085"
+    
+  pines_oh_my_whispering_pines:
+    container_name: pines_oh_my_whispering_pines
+    image: alpine:latest
+    command: tail -F anything
+    volumes:
+      - ubuntu_volumes:/pines
+    depends_on:
+      - our_db
+    networks:
+      - our_network
+    restart: always
+    links:
+      - "our_db:our_db"
+    
+
+  our_db:
+    container_name: our_db
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    
+    volumes:
+      - mariadb_data:/var/lib/mariadb_data/data
+      # NEVER HAVE SUCH IN PROD
+    environment:
+      - "MYSQL_PASSWORD=ourPassword123"
+      - "MYSQL_ROOT_PASSWORD=ourPassword23"
+      - "MYSQL_DATABASE=our_db"
+      - "MYSQL_USER=mrion"
+
+volumes:
+  mariadb_data:
+  ubuntu_volumes:
+
+networks:
+  our_network:
